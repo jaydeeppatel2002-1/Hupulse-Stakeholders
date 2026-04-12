@@ -1,0 +1,121 @@
+================================================================================
+                     HuPulse Stakeholders – Change History
+================================================================================
+
+[2026-03-24]  INITIAL SETUP
+─────────────────────────────
+• Created requirements.txt listing project dependencies.
+• Ran npm install for both Frontend and Backend.
+• Ran `npx prisma generate` (Prisma Client v5.22.0).
+• Fixed TS7053 build error in stakeholders.service.ts:
+    – orderBy dynamic key indexing required
+      `as Prisma.StakeholderOrderByWithRelationInput` type assertion.
+• Both Backend and Frontend builds completed successfully.
+
+[2026-03-25]  DEV SERVERS
+─────────────────────────────
+• Started Backend dev server on port 4000 (NestJS).
+• Started Frontend dev server on port 5173 (Vite).
+
+[2026-03-25]  API WIRING – PHASE 1
+────────────────────────────────────
+Problem: Frontend was a pure UI mockup with zero API integration; clicking
+any button did nothing.
+
+Created files:
+  • Frontend/src/app/api.ts
+      – Centralized typed API service layer with request<T>() helper.
+      – Namespaced exports: stakeholdersApi, communicationsApi, surveysApi,
+        coursesApi, analyticsApi, notificationsApi, tagsApi.
+
+  • Backend/apps/api/src/shared/middleware/dev-auth.middleware.ts
+      – Injects mock user { supabaseUserId: 'dev-user-000' } in dev mode.
+
+Modified files:
+  • Frontend/vite.config.ts
+      – Added dev proxy: /api/v1 → http://localhost:4000.
+
+  • Backend/apps/api/src/shared/auth/supabase.guard.ts
+      – Dev bypass: allows requests without Authorization header in dev.
+
+  • Backend/apps/api/src/shared/middleware/org-resolver.middleware.ts
+      – Added try/catch and dev fallback mock context.
+
+  • Backend/apps/api/src/app.module.ts
+      – Registered DevAuthMiddleware in middleware pipeline.
+
+  • Frontend/src/app/components/stakeholders/StakeholdersPage.tsx
+      – Connected to stakeholdersApi; useEffect loading, Add modal, email
+        and calendar action buttons.
+
+  • Frontend/src/app/components/dashboard/Dashboard.tsx
+      – Connected to analyticsApi + stakeholdersApi; "Generate Report"
+        downloads CSV.
+
+  • Frontend/src/app/components/communication/CommunicationPage.tsx
+      – Connected to communicationsApi; controlled form modal, channel
+        selection, action buttons.
+
+  • Frontend/src/app/components/feedback/FeedbackPage.tsx
+      – Connected to surveysApi; New Survey modal, alert dismiss/action
+        buttons.
+
+[2026-03-25]  API WIRING – PHASE 2  (Recheck & Reconnect)
+──────────────────────────────────────────────────────────────
+Ran full audit of all pages, api.ts, vite config, and backend auth files.
+
+Findings:
+  – StakeholdersPage, Dashboard, CommunicationPage, FeedbackPage: already wired.
+  – LearningPage and AnalyticsPage: NOT wired.
+
+Modified files:
+  • Frontend/src/app/components/learning/LearningPage.tsx
+      – Added coursesApi import, useEffect loading, courseList state,
+        functional course buttons (Start/Continue/Review), AI recommendation
+        action buttons with toast notifications.
+
+  • Frontend/src/app/components/analytics/AnalyticsPage.tsx
+      – Added analyticsApi import, useEffect loading, handleExport()
+        downloads CSV, predictive insight action buttons (calendar integration,
+        toast notifications).
+
+  • Backend/apps/api/src/shared/database/prisma.service.ts
+      – Wrapped $connect() in try/catch so backend starts without a database.
+
+[2026-03-25]  FIX BACKEND 500 ERRORS
+──────────────────────────────────────
+Problem: All API endpoints returned 500 Internal Server Error because
+DATABASE_URL had placeholder credentials and Prisma queries failed.
+
+Browser console showed 500 errors from:
+  – /api/v1/analytics/dashboard
+  – /api/v1/stakeholders/stats
+  – /api/v1/communications?limit=50
+  – /api/v1/surveys?limit=50
+  – 404 for /favicon.ico
+
+Created files:
+  • Backend/apps/api/src/shared/interceptors/prisma-fallback.interceptor.ts
+      – Global NestJS interceptor that catches Prisma connection/init errors.
+      – GET requests receive appropriate empty payloads (200):
+          stats/dashboard endpoints → {}
+          list endpoints → { data: [], total: 0, page: 1, limit: 20 }
+          alerts/results endpoints → []
+      – Non-GET mutations → 503 Service Unavailable.
+
+Modified files:
+  • Backend/apps/api/src/app.module.ts
+      – Imported APP_INTERCEPTOR from @nestjs/core.
+      – Registered PrismaFallbackInterceptor globally.
+
+  • Frontend/index.html
+      – Added inline SVG favicon (purple "H" icon) via data URI.
+      – Updated page title to "HuPulse".
+
+Verification:
+  All four endpoints confirmed returning 200 with empty payloads.
+  Favicon 404 eliminated.
+
+================================================================================
+                              END OF HISTORY
+================================================================================

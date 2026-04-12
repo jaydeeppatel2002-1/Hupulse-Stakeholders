@@ -1,0 +1,156 @@
+# ❗ CRITICAL REQUIREMENT — FULL MONOLITHIC DESIGN GENERATION
+
+Do NOT generate a single page or a few screens.
+
+You MUST generate a **complete monolithic Figma file** for HuPulse Stakeholder that includes:
+
+## 1. FULL DESIGN SYSTEM (MANDATORY)
+
+Create a dedicated page called “Design System” including:
+
+* Color tokens (primary, secondary, semantic, gradients)
+* Typography scale (H1–H6, body, captions)
+* Spacing system
+* Grid system
+* Shadows & elevation
+* Icons and visual language
+
+---
+
+## 2. COMPLETE COMPONENT LIBRARY
+
+Create ALL reusable components with variants and states:
+
+### Core Components
+
+* Buttons (primary, secondary, ghost, destructive, loading)
+* Inputs (text, dropdown, search, multi-select)
+* Tables (with sorting, filtering, pagination)
+* Cards (analytics, alerts, data, insights)
+* Modals & drawers
+* Tabs & navigation
+* Sidebar (collapsed + expanded)
+* Navbar (with search, notifications, profile)
+* Toast notifications
+* Tooltips
+
+---
+
+### Advanced Components
+
+* Sentiment badge (supportive / neutral / resistant)
+* Influence score indicator
+* Power–Interest matrix component
+* RACI matrix grid
+* Timeline / communication log UI
+* Survey builder blocks
+* Heatmap visualization
+* KPI cards
+* Analytics charts
+* Network graph component (node-based)
+
+---
+
+## 3. ALL MODULE SCREENS (NO EXCEPTIONS)
+
+You MUST generate COMPLETE flows for every module:
+
+### Dashboard
+
+* main dashboard
+* loading state
+* empty state
+
+### Stakeholder Module
+
+* stakeholder list
+* stakeholder profile
+* edit/create stakeholder
+* power-interest matrix
+* influence graph
+* RACI matrix
+
+### Communication Module
+
+* communication timeline
+* add interaction modal
+* filtered views
+
+### Feedback Module
+
+* survey builder
+* results dashboard
+* sentiment heatmap
+
+### LMS Module
+
+* course dashboard
+* progress tracking
+* skills matrix
+
+### Analytics Module
+
+* multiple dashboards
+* drill-down views
+
+---
+
+## 4. FULL MARKETING WEBSITE
+
+Generate ALL pages:
+
+* landing page
+* features page
+* pricing page
+* about page
+* contact/demo page
+
+Include SEO-ready layout and sections.
+
+---
+
+## 5. STATES & INTERACTIONS
+
+For EVERY major screen and component include:
+
+* hover states
+* active states
+* loading states
+* empty states
+* error states
+
+---
+
+## 6. MONOLITHIC STRUCTURE REQUIREMENT
+
+All components, pages, and modules must exist in:
+
+ONE SINGLE FIGMA FILE
+with clearly separated pages:
+
+* Design System
+* Components
+* App Screens
+* Marketing Website
+
+Ensure:
+
+* all components are reused across screens
+* consistent naming conventions
+* auto layout is used everywhere
+* scalable for developer handoff
+
+---
+
+## 7. OUTPUT EXPECTATION
+
+This should NOT look like a concept.
+
+It must look like:
+
+A COMPLETE, PRODUCTION-READY SaaS DESIGN SYSTEM
+for HuPulse Stakeholder.
+
+Avoid partial work. Avoid placeholders.
+
+Generate EVERYTHING in full detail.

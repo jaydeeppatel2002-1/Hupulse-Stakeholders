@@ -1,0 +1,418 @@
+// ============================================================
+// HuPulse Stakeholder - Prisma Schema
+// Production-grade database schema for stakeholder management
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ── Enums ───────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  ANALYST
+  VIEWER
+}
+
+enum StakeholderType {
+  INTERNAL
+  EXTERNAL
+  PARTNER
+  REGULATOR
+  COMMUNITY
+  INVESTOR
+  CUSTOMER
+  VENDOR
+}
+
+enum StakeholderStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+  AT_RISK
+}
+
+enum SentimentType {
+  SUPPORTIVE
+  NEUTRAL
+  RESISTANT
+  UNKNOWN
+}
+
+enum CommunicationChannel {
+  EMAIL
+  SMS
+  MEETING
+  PHONE
+  NOTE
+  VIDEO_CALL
+  IN_PERSON
+}
+
+enum CommunicationDirection {
+  INBOUND
+  OUTBOUND
+  INTERNAL
+}
+
+enum SurveyStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+enum SurveyType {
+  FEEDBACK
+  PULSE_CHECK
+  SATISFACTION
+  ENGAGEMENT
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ── Users & Organizations ───────────────────────────────────
+
+model Organization {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  domain    String?
+  logoUrl   String?  @map("logo_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users          User[]
+  stakeholders   Stakeholder[]
+  communications Communication[]
+  surveys        Survey[]
+  courses        Course[]
+  tags           Tag[]
+  analyticsSnapshots AnalyticsSnapshot[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String   @id @default(uuid()) @db.Uuid
+  supabaseUserId String   @unique @map("supabase_user_id")
+  email          String   @unique
+  fullName       String   @map("full_name")
+  avatarUrl      String?  @map("avatar_url")
+  role           UserRole @default(VIEWER)
+  organizationId String   @map("organization_id") @db.Uuid
+  isActive       Boolean  @default(true) @map("is_active")
+  lastLoginAt    DateTime? @map("last_login_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  communications  Communication[]  @relation("CommunicationCreator")
+  surveys         Survey[]         @relation("SurveyCreator")
+  surveyResponses SurveyResponse[] @relation("ResponseSubmitter")
+  courseAssignments CourseAssignment[] @relation("AssignmentCreator")
+  notifications   Notification[]
+
+  @@index([organizationId])
+  @@index([supabaseUserId])
+  @@index([email])
+  @@map("users")
+}
+
+// ── Stakeholders ────────────────────────────────────────────
+
+model Stakeholder {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  firstName      String           @map("first_name")
+  lastName       String           @map("last_name")
+  email          String?
+  phone          String?
+  jobTitle       String?          @map("job_title")
+  company        String?
+  department     String?
+  type           StakeholderType  @default(EXTERNAL)
+  status         StakeholderStatus @default(ACTIVE)
+  powerScore     Int              @default(5) @map("power_score")
+  interestScore  Int              @default(5) @map("interest_score")
+  sentiment      SentimentType    @default(UNKNOWN)
+  avatarUrl      String?          @map("avatar_url")
+  notes          String?
+  customFields   Json?            @map("custom_fields")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  organization    Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tags            StakeholderTag[]
+  communications  CommunicationStakeholder[]
+  surveyResponses SurveyResponse[]
+  courseAssignments CourseAssignment[]
+  engagementScores EngagementScore[]
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, type])
+  @@index([organizationId, sentiment])
+  @@index([powerScore, interestScore])
+  @@map("stakeholders")
+}
+
+model Tag {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  color          String   @default("#6366f1")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  stakeholders StakeholderTag[]
+
+  @@unique([organizationId, name])
+  @@map("tags")
+}
+
+model StakeholderTag {
+  stakeholderId String @map("stakeholder_id") @db.Uuid
+  tagId         String @map("tag_id") @db.Uuid
+
+  stakeholder Stakeholder @relation(fields: [stakeholderId], references: [id], onDelete: Cascade)
+  tag         Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([stakeholderId, tagId])
+  @@map("stakeholder_tags")
+}
+
+// ── Communications ──────────────────────────────────────────
+
+model Communication {
+  id             String                 @id @default(uuid()) @db.Uuid
+  organizationId String                 @map("organization_id") @db.Uuid
+  createdById    String                 @map("created_by_id") @db.Uuid
+  channel        CommunicationChannel
+  direction      CommunicationDirection @default(OUTBOUND)
+  subject        String?
+  body           String
+  summary        String?
+  sentiment      SentimentType?
+  occurredAt     DateTime               @default(now()) @map("occurred_at")
+  metadata       Json?
+  createdAt      DateTime               @default(now()) @map("created_at")
+  updatedAt      DateTime               @updatedAt @map("updated_at")
+
+  organization Organization                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User                        @relation("CommunicationCreator", fields: [createdById], references: [id])
+  stakeholders CommunicationStakeholder[]
+  attachments  Attachment[]
+
+  @@index([organizationId])
+  @@index([organizationId, channel])
+  @@index([organizationId, occurredAt])
+  @@map("communications")
+}
+
+model CommunicationStakeholder {
+  communicationId String @map("communication_id") @db.Uuid
+  stakeholderId   String @map("stakeholder_id") @db.Uuid
+
+  communication Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+  stakeholder   Stakeholder   @relation(fields: [stakeholderId], references: [id], onDelete: Cascade)
+
+  @@id([communicationId, stakeholderId])
+  @@map("communication_stakeholders")
+}
+
+model Attachment {
+  id              String   @id @default(uuid()) @db.Uuid
+  communicationId String   @map("communication_id") @db.Uuid
+  fileName        String   @map("file_name")
+  fileSize        Int      @map("file_size")
+  mimeType        String   @map("mime_type")
+  storageKey      String   @map("storage_key")
+  url             String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  communication Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+
+  @@index([communicationId])
+  @@map("attachments")
+}
+
+// ── Surveys & Feedback ──────────────────────────────────────
+
+model Survey {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  createdById    String       @map("created_by_id") @db.Uuid
+  title          String
+  description    String?
+  type           SurveyType   @default(FEEDBACK)
+  status         SurveyStatus @default(DRAFT)
+  questions      Json
+  startsAt       DateTime?    @map("starts_at")
+  endsAt         DateTime?    @map("ends_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User             @relation("SurveyCreator", fields: [createdById], references: [id])
+  responses    SurveyResponse[]
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, type])
+  @@map("surveys")
+}
+
+model SurveyResponse {
+  id            String        @id @default(uuid()) @db.Uuid
+  surveyId      String        @map("survey_id") @db.Uuid
+  stakeholderId String        @map("stakeholder_id") @db.Uuid
+  submittedById String?       @map("submitted_by_id") @db.Uuid
+  answers       Json
+  sentiment     SentimentType?
+  score         Float?
+  submittedAt   DateTime      @default(now()) @map("submitted_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  survey      Survey       @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  stakeholder Stakeholder  @relation(fields: [stakeholderId], references: [id], onDelete: Cascade)
+  submittedBy User?        @relation("ResponseSubmitter", fields: [submittedById], references: [id])
+
+  @@unique([surveyId, stakeholderId])
+  @@index([surveyId])
+  @@index([stakeholderId])
+  @@map("survey_responses")
+}
+
+// ── Learning Management ─────────────────────────────────────
+
+model Course {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  title          String
+  description    String?
+  content        Json?
+  objectives     String[]
+  durationHours  Float?       @map("duration_hours")
+  status         CourseStatus @default(DRAFT)
+  thumbnailUrl   String?      @map("thumbnail_url")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  assignments  CourseAssignment[]
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@map("courses")
+}
+
+model CourseAssignment {
+  id            String         @id @default(uuid()) @db.Uuid
+  courseId       String         @map("course_id") @db.Uuid
+  stakeholderId String         @map("stakeholder_id") @db.Uuid
+  assignedById  String         @map("assigned_by_id") @db.Uuid
+  status        ProgressStatus @default(NOT_STARTED)
+  progress      Float          @default(0)
+  startedAt     DateTime?      @map("started_at")
+  completedAt   DateTime?      @map("completed_at")
+  dueDate       DateTime?      @map("due_date")
+  notes         String?
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  stakeholder Stakeholder @relation(fields: [stakeholderId], references: [id], onDelete: Cascade)
+  assignedBy  User        @relation("AssignmentCreator", fields: [assignedById], references: [id])
+
+  @@unique([courseId, stakeholderId])
+  @@index([stakeholderId])
+  @@index([courseId])
+  @@index([status])
+  @@map("course_assignments")
+}
+
+// ── Analytics ───────────────────────────────────────────────
+
+model EngagementScore {
+  id            String   @id @default(uuid()) @db.Uuid
+  stakeholderId String   @map("stakeholder_id") @db.Uuid
+  score         Float
+  dimensions    Json
+  calculatedAt  DateTime @default(now()) @map("calculated_at")
+
+  stakeholder Stakeholder @relation(fields: [stakeholderId], references: [id], onDelete: Cascade)
+
+  @@index([stakeholderId])
+  @@index([calculatedAt])
+  @@map("engagement_scores")
+}
+
+model AnalyticsSnapshot {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  metricType     String   @map("metric_type")
+  metricValue    Float    @map("metric_value")
+  dimensions     Json?
+  snapshotDate   DateTime @map("snapshot_date")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, metricType])
+  @@index([organizationId, snapshotDate])
+  @@map("analytics_snapshots")
+}
+
+// ── Notifications ───────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String
+  body      String
+  severity  AlertSeverity    @default(LOW)
+  isRead    Boolean          @default(false) @map("is_read")
+  metadata  Json?
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}

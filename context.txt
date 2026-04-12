@@ -1,0 +1,136 @@
+================================================================================
+                         HuPulse Stakeholders – Project Context
+================================================================================
+
+PROJECT OVERVIEW
+----------------
+HuPulse is a stakeholder engagement and HR analytics platform with a NestJS
+backend and a React (Vite) frontend.  The application covers stakeholder
+management, communications, surveys/feedback, learning/courses, analytics
+dashboards, notifications, tags, and organization settings.
+
+REPOSITORY STRUCTURE
+--------------------
+HuPulse Stakeholders/
+├── Backend/                         NestJS monorepo
+│   ├── apps/api/src/
+│   │   ├── main.ts                  Entry – listens on port 4000, prefix api/v1
+│   │   ├── app.module.ts            Root module (guards, interceptors, middleware)
+│   │   ├── health.controller.ts     GET /api/v1/health
+│   │   ├── modules/
+│   │   │   ├── stakeholders/        CRUD + stats + matrix
+│   │   │   ├── communications/      CRUD + stats
+│   │   │   ├── surveys/             CRUD + responses + results + alerts
+│   │   │   ├── learning/            Courses CRUD + assignments + progress
+│   │   │   ├── analytics/           Dashboard, engagement, risk, departments,
+│   │   │   │                        communication analytics, predictive
+│   │   │   ├── notifications/       Notification management
+│   │   │   ├── organizations/       Organization settings
+│   │   │   ├── users/               User management
+│   │   │   └── tags/                Tagging system
+│   │   └── shared/
+│   │       ├── auth/                SupabaseGuard, RolesGuard, JWT strategy
+│   │       ├── database/            PrismaService (PostgreSQL via Supabase)
+│   │       ├── decorators/          @OrgId(), @UserId(), @Roles()
+│   │       ├── dto/                 PaginationDto, PaginatedResult
+│   │       ├── middleware/          DevAuthMiddleware, OrgResolverMiddleware
+│   │       └── interceptors/        PrismaFallbackInterceptor
+│   ├── prisma/
+│   │   ├── schema.prisma            Database schema
+│   │   └── seed.ts                  Seed script
+│   ├── package.json
+│   ├── tsconfig.json                Paths: @shared/*, @modules/*
+│   └── nest-cli.json
+│
+├── Frontend/                        React 18 + Vite 6
+│   ├── index.html                   SPA entry (inline SVG favicon)
+│   ├── vite.config.ts               Dev proxy: /api/v1 → localhost:4000
+│   ├── src/
+│   │   ├── main.tsx
+│   │   ├── app/
+│   │   │   ├── App.tsx
+│   │   │   ├── routes.tsx           React Router v7
+│   │   │   ├── api.ts              Centralized API service layer
+│   │   │   └── components/
+│   │   │       ├── stakeholders/    StakeholdersPage  (wired to API)
+│   │   │       ├── dashboard/       Dashboard          (wired to API)
+│   │   │       ├── communication/   CommunicationPage  (wired to API)
+│   │   │       ├── feedback/        FeedbackPage        (wired to API)
+│   │   │       ├── learning/        LearningPage        (wired to API)
+│   │   │       ├── analytics/       AnalyticsPage       (wired to API)
+│   │   │       ├── settings/        SettingsPage
+│   │   │       ├── marketing/       LandingPage
+│   │   │       ├── layout/          AppLayout (sidebar + header)
+│   │   │       └── ui/              shadcn/ui components
+│   │   ├── imports/pasted_text/     Design reference files
+│   │   └── styles/                  Tailwind, fonts, theme
+│   └── package.json
+│
+└── context.txt / history.txt        This file and change log
+
+TECHNOLOGY STACK
+----------------
+Backend:
+  • NestJS 10.x  (TypeScript)
+  • Prisma 5.x ORM  →  PostgreSQL (Supabase)
+  • Passport JWT authentication
+  • Swagger / OpenAPI
+  • @nestjs/throttler for rate limiting
+  • BullMQ + Redis (configured but optional)
+
+Frontend:
+  • React 18.3.1
+  • Vite 6.3.5
+  • TypeScript
+  • Tailwind CSS 4.x
+  • Radix UI (via shadcn/ui)
+  • MUI 7.x (partial use)
+  • Recharts (charts)
+  • React Router 7.x
+
+AUTHENTICATION (DEV MODE)
+--------------------------
+A development bypass chain is in place so the app works without Supabase:
+  1. SupabaseGuard   – skips JWT validation when NODE_ENV != production
+  2. DevAuthMiddleware – injects mock user { supabaseUserId: 'dev-user-000' }
+  3. OrgResolverMiddleware – injects mock context:
+       userId = 'dev-user-id'
+       organizationId = 'dev-org-id'
+       role = 'ADMIN'
+
+DATABASE STATUS
+---------------
+DATABASE_URL in .env contains placeholder credentials ([YOUR_*]).
+PrismaService.onModuleInit() catches connection failures gracefully.
+PrismaFallbackInterceptor returns empty payloads (200) for GET requests
+when the database is unavailable, so the frontend receives valid responses
+instead of 500 errors.
+
+DEV SERVER PORTS
+----------------
+  Backend:   http://localhost:4000   (NestJS)
+  Frontend:  http://localhost:5173   (Vite dev server)
+  Proxy:     /api/v1 on 5173 → localhost:4000
+
+API SERVICE LAYER  (Frontend/src/app/api.ts)
+--------------------------------------------
+Exports typed API namespaces:
+  • stakeholdersApi   – list, get, create, update, remove, stats, matrix
+  • communicationsApi – list, get, create, update, remove, stats
+  • surveysApi        – list, get, create, update, remove, submitResponse,
+                        results, alerts
+  • coursesApi        – list, get, create, update, remove, assign,
+                        updateProgress, teamProgress
+  • analyticsApi      – dashboard, engagement, risk, departments,
+                        communication, predictive
+  • notificationsApi  – list, markRead, markAllRead
+  • tagsApi           – list, create, remove
+
+All use a shared request<T>(path, init?) helper with BASE = '/api/v1'.
+
+KNOWN LIMITATIONS
+-----------------
+  • No real database connection – all data is empty/fallback.
+  • Frontend pages fall back to hardcoded static data when API returns empty.
+  • Redis/BullMQ not configured – notification queues won't function.
+  • Supabase auth is bypassed in dev; production auth is untested.

@@ -1,0 +1,263 @@
+You are a world-class product designer and Figma expert specializing in enterprise SaaS, AI tools, and modern dashboard UX.
+
+Your task is to design a **complete, production-ready Figma file** for a product called:
+
+# HuPulse Stakeholder
+
+This is a next-generation SaaS platform that replaces traditional dashboards with:
+
+* stakeholder intelligence
+* influence mapping
+* sentiment tracking
+* engagement planning
+* AI-driven insights
+
+The design must be **exceptional, premium, and visually striking**, comparable to:
+
+* Stripe Dashboard
+* Linear App
+* Notion
+* Vercel
+
+---
+
+# 🎯 DESIGN GOALS
+
+* Make **HuPulse Stakeholder** feel AI-native and futuristic
+* Use subtle **3D visual elements** to create a premium experience
+* Focus on **clarity, density, and usability**
+* Ensure **enterprise-grade UX**
+* Make it **conversion-optimized for SaaS growth**
+* Design both **web app + marketing website**
+
+---
+
+# 🧱 ARCHITECTURE (MICROLITHIC UI)
+
+Design the UI as modular sections:
+
+* Stakeholder Management
+* Communication
+* Feedback & Sentiment
+* LMS (Learning)
+* Analytics
+
+Each module should feel like a **mini-product inside HuPulse Stakeholder**, but share a unified design system.
+
+---
+
+# 🎨 DESIGN SYSTEM
+
+Create a full design system for **HuPulse Stakeholder**:
+
+## Colors
+
+* Dark + Light themes
+* Primary: deep blue / indigo
+* Accent: neon purple / cyan (AI feel)
+
+Semantic:
+
+* Green → supportive
+* Yellow → neutral
+* Red → resistant
+
+## Typography
+
+* Modern SaaS font (Inter / Geist style)
+* Clear hierarchy (H1–H6, body, labels)
+
+## Components
+
+* Buttons (primary, secondary, ghost)
+* Cards (analytics, alerts, insights)
+* Data tables (advanced filtering)
+* Tags (sentiment, influence level)
+* Modals, dropdowns, sidebars
+* Toast notifications
+
+---
+
+# 🧭 MAIN APPLICATION UI
+
+## Global Layout
+
+* Left sidebar with **HuPulse Stakeholder logo**
+* Top bar (search, notifications, user profile)
+* Content area (dynamic module rendering)
+
+Navigation:
+
+* Dashboard
+* Stakeholders
+* Communication
+* Feedback
+* Learning
+* Analytics
+* Settings
+
+---
+
+# 📊 DASHBOARD (HERO SCREEN)
+
+Design a powerful dashboard for **HuPulse Stakeholder** showing:
+
+* Stakeholder sentiment trend
+* Engagement score (large KPI card)
+* High-risk stakeholders
+* Communication activity timeline
+* Influence network preview
+
+Use:
+
+* smooth charts
+* micro-interactions
+* subtle 3D gradients
+
+---
+
+# 👥 STAKEHOLDER MANAGEMENT
+
+## Stakeholder Table
+
+* filters, sorting, search
+* sentiment badges
+* influence score
+* power vs interest
+
+## Stakeholder Profile
+
+* profile summary
+* communication timeline
+* sentiment graph
+* relationship network
+
+## Power–Interest Matrix
+
+* interactive quadrant UI
+
+## Influence Network
+
+* visually rich graph
+* glowing nodes and edges
+* 3D depth styling
+
+## RACI Matrix
+
+* editable grid UI
+
+---
+
+# 💬 COMMUNICATION MODULE
+
+* timeline UI (Slack + CRM hybrid)
+* logs for email, SMS, meetings
+* filters by channel
+* quick add interaction
+
+---
+
+# 📈 FEEDBACK & SENTIMENT
+
+* survey builder (drag & drop)
+* sentiment heatmap
+* pulse checks
+* alert system
+
+---
+
+# 🎓 LMS MODULE
+
+* skills vs stakeholder mapping
+* course progress cards
+* learning analytics
+
+---
+
+# 📊 ANALYTICS MODULE
+
+* engagement trends
+* stakeholder risk scoring
+* predictive insights
+* heatmaps
+
+---
+
+# 🌐 MARKETING WEBSITE (SEO + CONVERSION)
+
+Design a full website for **HuPulse Stakeholder**:
+
+## Hero Section
+
+Headline:
+“Stop Reading Dashboards. Start Getting Answers.”
+
+* 3D visualization of data → insights
+* CTA: Get Started / Book Demo
+
+## Features Section
+
+* stakeholder intelligence
+* influence mapping
+* AI insights
+
+## Screenshots Section
+
+## Social Proof
+
+## Pricing Section
+
+## SEO Optimization
+
+Use keyword-rich sections:
+
+* stakeholder management software
+* stakeholder analysis platform
+* change management tools
+
+Ensure proper H1, H2, H3 hierarchy.
+
+---
+
+# ✨ 3D VISUAL ENHANCEMENTS
+
+* floating cards
+* glowing network graphs
+* soft shadows
+* gradients
+* abstract 3D objects (nodes, spheres, connections)
+
+---
+
+# 📱 RESPONSIVENESS
+
+Design for:
+
+* Desktop (primary)
+* Tablet
+* Mobile
+
+---
+
+# 📦 DELIVERABLES
+
+The Figma file must include:
+
+1. Full design system for HuPulse Stakeholder
+2. All module screens
+3. Marketing website
+4. Reusable components
+5. Dark + light themes
+6. Interaction states
+7. Empty & error states
+
+---
+
+# 🚀 OUTPUT QUALITY
+
+* Make it **investor demo ready**
+* Make it **developer handoff ready**
+* Avoid generic UI
+* Ensure strong branding for **HuPulse Stakeholder**
+
+Think like you are designing the next billion-dollar SaaS product.
