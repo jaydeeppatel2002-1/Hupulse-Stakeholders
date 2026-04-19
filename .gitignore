@@ -7,3 +7,5 @@ coverage/
 Thumbs.db
 .turbo/
 .vercel/
+.vercel
+.env*.local

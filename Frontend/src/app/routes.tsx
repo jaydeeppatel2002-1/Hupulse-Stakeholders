@@ -4,6 +4,7 @@ import { LandingPage } from "./components/marketing/LandingPage";
 import { Dashboard } from "./components/dashboard/Dashboard";
 import { StakeholdersPage } from "./components/stakeholders/StakeholdersPage";
 import { CommunicationPage } from "./components/communication/CommunicationPage";
+import { DocumentsPage } from "./components/documents/DocumentsPage";
 import { FeedbackPage } from "./components/feedback/FeedbackPage";
 import { LearningPage } from "./components/learning/LearningPage";
 import { AnalyticsPage } from "./components/analytics/AnalyticsPage";
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
       { path: "programs", Component: ProgramsPage },
       { path: "stakeholders", Component: StakeholdersPage },
       { path: "communication", Component: CommunicationPage },
+      { path: "documents", Component: DocumentsPage },
       { path: "feedback", Component: FeedbackPage },
       { path: "learning", Component: LearningPage },
       { path: "analytics", Component: AnalyticsPage },

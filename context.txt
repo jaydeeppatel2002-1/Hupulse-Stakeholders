@@ -5,9 +5,17 @@
 PROJECT OVERVIEW
 ----------------
 HuPulse is a stakeholder engagement and HR analytics platform with a NestJS
-backend and a React (Vite) frontend.  The application covers stakeholder
-management, communications, surveys/feedback, learning/courses, analytics
-dashboards, notifications, tags, and organization settings.
+backend and a React (Vite) frontend. The app is designed for customer success,
+program management, and leadership teams to manage stakeholder relationships,
+track communications, collect feedback, assign learning, and monitor risk in
+one central experience.
+
+USE CASE
+--------
+This product is built to help enterprise teams maintain stakeholder context,
+centralize documentation, coordinate surveys and learning, and expose analytics
+insights from a single platform. It is intended as a stakeholder intelligence
+hub rather than a basic CRM.
 
 REPOSITORY STRUCTURE
 --------------------
@@ -55,6 +63,7 @@ HuPulse Stakeholders/
 │   │   │       ├── stakeholders/    StakeholdersPage  (wired to API)
 │   │   │       ├── dashboard/       Dashboard          (wired to API)
 │   │   │       ├── communication/   CommunicationPage  (wired to API)
+│   │   │       ├── documents/       DocumentsPage      (central document hub)
 │   │   │       ├── feedback/        FeedbackPage        (wired to API)
 │   │   │       ├── learning/        LearningPage        (wired to API)
 │   │   │       ├── analytics/       AnalyticsPage       (wired to API)

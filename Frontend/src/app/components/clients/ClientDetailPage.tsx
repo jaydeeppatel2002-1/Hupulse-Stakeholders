@@ -616,6 +616,11 @@ function ActivityViewTab({ client }: { client: Client }) {
   const clientPrograms = programs.filter(p => p.clientId === client.id);
   const taskLists = getClientTasks(client);
   const [activeView, setActiveView] = useState<"tasks" | "milestones" | "kanban" | "gantt">("tasks");
+  const [expandedTaskList, setExpandedTaskList] = useState<number | null>(null);
+
+  const toggleTaskList = (index: number) => {
+    setExpandedTaskList(prev => (prev === index ? null : index));
+  };
 
   const milestones = [
     { name: "Phase 1 Complete", date: "Jan 2026", status: "Done", program: clientPrograms[0]?.name || "N/A" },
@@ -640,48 +645,93 @@ function ActivityViewTab({ client }: { client: Client }) {
         <div className="space-y-4">
           {taskLists.map((list, li) => (
             <SectionCard key={li}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-sm font-semibold text-white">{list.name}</span>
-                <div className="flex items-center gap-2 ml-auto">
-                  <div className="w-24 h-2 rounded-full" style={{ background: "#1A1A38" }}>
-                    <div className="h-full rounded-full" style={{ width: `${list.progress}%`, background: "#10B981" }} />
-                  </div>
-                  <span className="text-[10px]" style={{ color: "#10B981" }}>{list.progress}%</span>
-                </div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid #1A1A38" }}>
-                      {["#", "Task", "Status", "Priority", "% Complete"].map(h => (
-                        <th key={h} className="py-2 px-3 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#475569" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list.tasks.map((task, ti) => (
-                      <tr key={ti} className="hover:bg-[#111128] transition-colors" style={{ borderBottom: "1px solid #0F0F28" }}>
-                        <td className="py-2.5 px-3 text-[10px] font-mono" style={{ color: "#64748B" }}>{task.id}</td>
-                        <td className="py-2.5 px-3 text-xs text-white">{task.name}</td>
-                        <td className="py-2.5 px-3"><StatusBadge status={task.status} /></td>
-                        <td className="py-2.5 px-3"><PriorityBadge priority={task.priority} /></td>
-                        <td className="py-2.5 px-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 h-1.5 rounded-full" style={{ background: "#1A1A38" }}>
-                              <div className="h-full rounded-full transition-all" style={{ width: `${task.completion}%`, background: task.completion === 100 ? "#10B981" : task.completion > 50 ? "#F59E0B" : "#6366F1" }} />
+              {(() => {
+                const isOpen = expandedTaskList === li;
+                const linkedProgram = clientPrograms[li] || null;
+                return (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => toggleTaskList(li)}
+                      className="w-full flex items-center gap-3"
+                    >
+                      {isOpen ? <ChevronDown size={14} style={{ color: "#818CF8" }} /> : <ChevronRight size={14} style={{ color: "#64748B" }} />}
+                      <span className="text-sm font-semibold text-white">{list.name}</span>
+                      <div className="flex items-center gap-2 ml-auto">
+                        <div className="w-24 h-2 rounded-full" style={{ background: "#1A1A38" }}>
+                          <div className="h-full rounded-full" style={{ width: `${list.progress}%`, background: "#10B981" }} />
+                        </div>
+                        <span className="text-[10px]" style={{ color: "#10B981" }}>{list.progress}%</span>
+                      </div>
+                    </button>
+
+                    {isOpen && (
+                      <>
+                        <div className="mt-4 rounded-lg p-3" style={{ background: "#111128", border: "1px solid #1A1A38" }}>
+                          <div className="text-[10px] mb-2" style={{ color: "#64748B" }}>Program Details</div>
+                          {linkedProgram ? (
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                              <div>
+                                <div className="text-[10px]" style={{ color: "#475569" }}>Program</div>
+                                <div className="text-xs text-white font-medium">{linkedProgram.name}</div>
+                              </div>
+                              <div>
+                                <div className="text-[10px]" style={{ color: "#475569" }}>Owner</div>
+                                <div className="text-xs text-white">{linkedProgram.owner}</div>
+                              </div>
+                              <div>
+                                <div className="text-[10px]" style={{ color: "#475569" }}>Timeline</div>
+                                <div className="text-xs text-white">{linkedProgram.startDate} - {linkedProgram.endDate}</div>
+                              </div>
+                              <div>
+                                <div className="text-[10px]" style={{ color: "#475569" }}>Health</div>
+                                <HealthBadge health={linkedProgram.health} />
+                              </div>
                             </div>
-                            <span className="text-[10px] text-white">{task.completion}%</span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: "1px solid #1A1A38" }}>
-                <button className="text-[10px] flex items-center gap-1" style={{ color: "#818CF8" }}><Plus size={10} /> Add Task</button>
-                <button className="text-[10px] flex items-center gap-1" style={{ color: "#818CF8" }}><Plus size={10} /> Add Task List</button>
-              </div>
+                          ) : (
+                            <div className="text-xs" style={{ color: "#94A3B8" }}>No linked program found for this activity entry.</div>
+                          )}
+                        </div>
+
+                        <div className="overflow-x-auto mt-4">
+                          <table className="w-full text-left">
+                            <thead>
+                              <tr style={{ borderBottom: "1px solid #1A1A38" }}>
+                                {["#", "Task", "Status", "Priority", "% Complete"].map(h => (
+                                  <th key={h} className="py-2 px-3 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#475569" }}>{h}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {list.tasks.map((task, ti) => (
+                                <tr key={ti} className="hover:bg-[#111128] transition-colors" style={{ borderBottom: "1px solid #0F0F28" }}>
+                                  <td className="py-2.5 px-3 text-[10px] font-mono" style={{ color: "#64748B" }}>{task.id}</td>
+                                  <td className="py-2.5 px-3 text-xs text-white">{task.name}</td>
+                                  <td className="py-2.5 px-3"><StatusBadge status={task.status} /></td>
+                                  <td className="py-2.5 px-3"><PriorityBadge priority={task.priority} /></td>
+                                  <td className="py-2.5 px-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-16 h-1.5 rounded-full" style={{ background: "#1A1A38" }}>
+                                        <div className="h-full rounded-full transition-all" style={{ width: `${task.completion}%`, background: task.completion === 100 ? "#10B981" : task.completion > 50 ? "#F59E0B" : "#6366F1" }} />
+                                      </div>
+                                      <span className="text-[10px] text-white">{task.completion}%</span>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: "1px solid #1A1A38" }}>
+                          <button className="text-[10px] flex items-center gap-1" style={{ color: "#818CF8" }}><Plus size={10} /> Add Task</button>
+                          <button className="text-[10px] flex items-center gap-1" style={{ color: "#818CF8" }}><Plus size={10} /> Add Task List</button>
+                        </div>
+                      </>
+                    )}
+                  </>
+                );
+              })()}
             </SectionCard>
           ))}
         </div>
