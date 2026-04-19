@@ -552,89 +552,216 @@ function ConsultantDashboard() {
 // ── END STAKEHOLDER DASHBOARD ───────────────────────────────
 function StakeholderDashboard() {
   const navigate = useNavigate();
+
+  const stakeholder = {
+    initials: "JD",
+    name: "John Doe",
+    role: "External Stakeholder",
+    company: "Acme Corporation",
+    status: "Supportive",
+    sentiment: "Your feedback is being heard",
+    nextMeeting: "Apr 16, 2026",
+    nextAction: "Review Q2 summary and confirm milestone alignment",
+    primaryProgram: {
+      name: "Digital Transformation",
+      stage: "Adoption",
+      health: "on_track",
+      progress: 78,
+      owner: "Sarah Parker",
+      nextUpdate: "Apr 18, 2026",
+    },
+    csm: {
+      name: "Sarah Parker",
+      title: "Customer Success Manager",
+      email: "s.parker@hupulse.io",
+      phone: "+1 555 0123",
+    },
+  };
+
+  const tips = [
+    "Your input guides the next executive steering session.",
+    "Complete one survey this week to keep the program on track.",
+    "Use the quick update card to see what matters now.",
+  ];
+
+  const actions = [
+    { title: "Complete Q2 Satisfaction Survey", due: "Apr 10", icon: FileText },
+    { title: "Confirm milestone timeline", due: "Apr 16", icon: Calendar },
+    { title: "Review latest release notes", due: "Apr 18", icon: ExternalLink },
+  ];
+
+  const updates = [
+    { title: "New program update is available", time: "2h ago", desc: "Digital Transformation progress moved to 78%." },
+    { title: "Your feedback was acknowledged", time: "1d ago", desc: "CSM Sarah Parker reviewed your onboarding survey responses." },
+    { title: "Upcoming stakeholder review", time: "3d ago", desc: "Next alignment call scheduled for Apr 16." },
+  ];
+
+  const resources = [
+    { title: "What to expect as a stakeholder", type: "Guide" },
+    { title: "How we protect your data", type: "Policy" },
+  ];
+
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      {/* Profile Card */}
-      <div className="rounded-xl p-6 text-center" style={{ background: "#0C0C22", border: "1px solid #1A1A38" }}>
-        <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-xl font-bold" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}>JD</div>
-        <h2 className="text-lg font-semibold text-white mt-3">John Doe</h2>
-        <p className="text-xs" style={{ color: "#64748B" }}>External Stakeholder · Acme Corporation</p>
-        <div className="flex items-center justify-center gap-4 mt-4">
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">3</div>
-            <div className="text-[10px]" style={{ color: "#64748B" }}>Surveys</div>
-          </div>
-          <div className="w-px h-8" style={{ background: "#1A1A38" }} />
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">2</div>
-            <div className="text-[10px]" style={{ color: "#64748B" }}>Programs</div>
-          </div>
-          <div className="w-px h-8" style={{ background: "#1A1A38" }} />
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">12</div>
-            <div className="text-[10px]" style={{ color: "#64748B" }}>Interactions</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Pending Surveys */}
-      <div className="rounded-xl p-5" style={{ background: "#0C0C22", border: "1px solid #1A1A38" }}>
-        <SectionHeader title="Pending Surveys" subtitle="Please complete these surveys" />
-        <div className="space-y-2">
-          {[
-            { title: "Q2 Satisfaction Survey", due: "Apr 10, 2026", type: "NPS" },
-            { title: "Digital Transformation Feedback", due: "Apr 15, 2026", type: "Feedback" },
-          ].map((survey, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#111128] transition-colors cursor-pointer" style={{ border: "1px solid #1A1A38" }} onClick={() => navigate("/app/feedback")}>
-              <FileText size={16} style={{ color: "#6366F1" }} />
-              <div className="flex-1">
-                <div className="text-sm font-medium text-white">{survey.title}</div>
-                <div className="text-xs mt-0.5" style={{ color: "#64748B" }}>Due: {survey.due}</div>
-              </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(99,102,241,0.12)", color: "#818CF8" }}>{survey.type}</span>
-              <ChevronRight size={14} style={{ color: "#475569" }} />
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="rounded-3xl p-6 bg-[#0C0C22] border border-[#1A1A38] shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] text-white">{stakeholder.initials}</div>
+            <div>
+              <div className="text-xl font-semibold text-white">{stakeholder.name}</div>
+              <div className="text-sm mt-1" style={{ color: "#94A3B8" }}>{stakeholder.role} · {stakeholder.company}</div>
+              <div className="mt-3 text-sm" style={{ color: "#A5B4FC" }}>{stakeholder.sentiment}</div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Feedback */}
-      <div className="rounded-xl p-5" style={{ background: "#0C0C22", border: "1px solid #1A1A38" }}>
-        <SectionHeader title="Your Feedback History" />
-        <div className="space-y-2">
-          {[
-            { title: "Completed: Onboarding Experience Survey", date: "Mar 15, 2026", score: "8/10" },
-            { title: "Completed: Annual Partnership Review", date: "Feb 28, 2026", score: "7/10" },
-          ].map((fb, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#111128] transition-colors cursor-pointer" style={{ border: "1px solid #1A1A38" }} onClick={() => navigate("/app/feedback")}>
-              <CheckCircle size={14} style={{ color: "#10B981" }} />
-              <div className="flex-1">
-                <div className="text-xs font-medium text-white">{fb.title}</div>
-                <div className="text-[10px]" style={{ color: "#64748B" }}>{fb.date}</div>
-              </div>
-              <span className="text-xs font-medium" style={{ color: "#10B981" }}>{fb.score}</span>
+          </div>
+          <div className="grid grid-cols-3 gap-3 text-center text-xs">
+            <div className="rounded-2xl p-3 bg-[#111128] border border-[#1A1A38]">
+              <div className="text-sm font-semibold text-white">{stakeholder.primaryProgram.name}</div>
+              <div className="mt-1" style={{ color: "#94A3B8" }}>Current Program</div>
             </div>
-          ))}
+            <div className="rounded-2xl p-3 bg-[#111128] border border-[#1A1A38]">
+              <div className="text-sm font-semibold text-white">{stakeholder.nextMeeting}</div>
+              <div className="mt-1" style={{ color: "#94A3B8" }}>Next Check-in</div>
+            </div>
+            <div className="rounded-2xl p-3 bg-[#111128] border border-[#1A1A38]">
+              <div className="text-sm font-semibold text-white">{stakeholder.status}</div>
+              <div className="mt-1" style={{ color: "#94A3B8" }}>Engagement Status</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-[#111128] border border-[#1A1A38] p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-white">What you need to do next</div>
+              <div className="text-[11px] mt-1" style={{ color: "#94A3B8" }}>{stakeholder.nextAction}</div>
+            </div>
+            <button onClick={() => navigate("/app/feedback")} className="px-4 py-2 rounded-2xl text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}>
+              Share Feedback
+            </button>
+          </div>
+          <div className="mt-5 h-2 rounded-full bg-[#0C0C22] overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: `${stakeholder.primaryProgram.progress}%`, background: "#10B981" }} />
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[10px]" style={{ color: "#94A3B8" }}>
+            <span>Program progress</span>
+            <span>{stakeholder.primaryProgram.progress}% complete</span>
+          </div>
         </div>
       </div>
 
-      {/* Learning */}
-      <div className="rounded-xl p-5" style={{ background: "#0C0C22", border: "1px solid #1A1A38" }}>
-        <SectionHeader title="Learning Resources" />
-        <div className="space-y-2">
-          {[
-            { title: "Platform Introduction Guide", type: "Guide", progress: 100 },
-            { title: "Change Management Best Practices", type: "Course", progress: 60 },
-          ].map((course, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#111128] transition-colors cursor-pointer" style={{ border: "1px solid #1A1A38" }} onClick={() => navigate("/app/learning")}>
-              <BookOpen size={14} style={{ color: "#8B5CF6" }} />
-              <div className="flex-1">
-                <div className="text-xs font-medium text-white">{course.title}</div>
-                <div className="h-1 rounded-full mt-1.5" style={{ background: "#1A1A38" }}>
-                  <div className="h-full rounded-full" style={{ width: `${course.progress}%`, background: course.progress === 100 ? "#10B981" : "#6366F1" }} />
+      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="rounded-3xl p-5 bg-[#0C0C22] border border-[#1A1A38]">
+          <SectionHeader title="What matters most to you" subtitle="Your top stakeholder priorities" />
+          <ul className="space-y-3">
+            {tips.map((tip, index) => (
+              <li key={index} className="rounded-2xl p-4 bg-[#111128] border border-[#1A1A38] text-sm" style={{ color: "#E2E8F0" }}>
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#6366F1]" />
+                  <span>{tip}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="rounded-3xl p-5 bg-[#0C0C22] border border-[#1A1A38]">
+          <SectionHeader title="Your next actions" subtitle="Quick items for you" />
+          <div className="space-y-3">
+            {actions.map((action, index) => (
+              <button key={index} onClick={() => navigate(index === 0 ? "/app/feedback" : "/app/clients")} className="w-full rounded-2xl p-4 bg-[#111128] border border-[#1A1A38] text-left hover:border-[#6366F1] transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl flex items-center justify-center bg-[#16162B] text-[#818CF8]">
+                    <action.icon size={16} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-white">{action.title}</div>
+                    <div className="text-[10px] mt-1" style={{ color: "#64748B" }}>Due {action.due}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl p-5 bg-[#0C0C22] border border-[#1A1A38]">
+        <SectionHeader title="Program snapshot" subtitle="Your active engagement at a glance" />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="rounded-3xl p-4 bg-[#111128] border border-[#1A1A38]">
+            <div className="text-xs uppercase tracking-[0.2em] text-[#818CF8]">Program</div>
+            <div className="text-lg font-semibold text-white mt-2">{stakeholder.primaryProgram.name}</div>
+            <div className="text-[10px] mt-1" style={{ color: "#94A3B8" }}>Stage: {stakeholder.primaryProgram.stage}</div>
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-[#64748B]">Owner</div>
+                <div className="text-sm text-white">{stakeholder.primaryProgram.owner}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-[#64748B]">Next update</div>
+                <div className="text-sm text-white">{stakeholder.primaryProgram.nextUpdate}</div>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-3xl p-4 bg-[#111128] border border-[#1A1A38]">
+            <div className="text-xs uppercase tracking-[0.2em] text-[#818CF8]">Contact</div>
+            <div className="text-sm font-semibold text-white mt-2">{stakeholder.csm.name}</div>
+            <div className="text-[10px] mt-1" style={{ color: "#94A3B8" }}>{stakeholder.csm.title}</div>
+            <div className="mt-4 space-y-2 text-sm text-white">
+              <div>Email: {stakeholder.csm.email}</div>
+              <div>Phone: {stakeholder.csm.phone}</div>
+            </div>
+            <button onClick={() => navigate("/app/communication")} className="mt-4 w-full rounded-2xl px-4 py-2 text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}>
+              Message your CSM
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-3xl p-5 bg-[#0C0C22] border border-[#1A1A38]">
+          <SectionHeader title="Pending surveys" subtitle="Your input matters" />
+          <div className="space-y-3">
+            <button onClick={() => navigate("/app/feedback")} className="w-full rounded-2xl p-4 bg-[#111128] border border-[#1A1A38] text-left hover:border-[#6366F1] transition-colors">
+              <div className="text-sm font-medium text-white">Q2 Satisfaction Survey</div>
+              <div className="text-[10px] mt-1" style={{ color: "#64748B" }}>Due Apr 10</div>
+            </button>
+            <button onClick={() => navigate("/app/feedback")} className="w-full rounded-2xl p-4 bg-[#111128] border border-[#1A1A38] text-left hover:border-[#6366F1] transition-colors">
+              <div className="text-sm font-medium text-white">Digital Transformation Feedback</div>
+              <div className="text-[10px] mt-1" style={{ color: "#64748B" }}>Due Apr 15</div>
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-3xl p-5 bg-[#0C0C22] border border-[#1A1A38]">
+          <SectionHeader title="Helpful resources" subtitle="Easy reference for stakeholders" />
+          <div className="space-y-3">
+            {resources.map((resource, index) => (
+              <div key={index} className="rounded-2xl p-4 bg-[#111128] border border-[#1A1A38] text-sm text-white">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div>{resource.title}</div>
+                    <div className="text-[10px] mt-1" style={{ color: "#64748B" }}>{resource.type}</div>
+                  </div>
+                  <BookOpen size={16} style={{ color: "#8B5CF6" }} />
                 </div>
               </div>
-              <span className="text-[10px]" style={{ color: "#64748B" }}>{course.progress}%</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl p-5 bg-[#0C0C22] border border-[#1A1A38]">
+        <SectionHeader title="Recent updates" subtitle="Latest changes in your engagement" />
+        <div className="space-y-3">
+          {updates.map((update, index) => (
+            <div key={index} className="rounded-2xl p-4 bg-[#111128] border border-[#1A1A38]">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-medium text-white">{update.title}</div>
+                  <div className="text-[10px] mt-1" style={{ color: "#64748B" }}>{update.desc}</div>
+                </div>
+                <span className="text-[10px]" style={{ color: "#94A3B8" }}>{update.time}</span>
+              </div>
             </div>
           ))}
         </div>
